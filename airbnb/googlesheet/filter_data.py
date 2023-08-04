@@ -17,6 +17,7 @@ class FilterData:
         print("find_available_dates")
         #Set up the Chrome webdriver in headless mode
         options = webdriver.ChromeOptions()
+        print("find_available_dates_1")
         #options.binary_location = 'googlechrome'
         options.add_argument('--disable-extensions')
         options.add_argument('--headless')
@@ -24,11 +25,17 @@ class FilterData:
         options.add_argument('--disable-dev-shm-usage')
         # options.add_argument('--remote-debugging-port=9515')
         options.add_argument('--disable-setuid-sandbox')
+        print("find_available_dates_2")
         
         driver = webdriver.Chrome(options=options)
+        print("find_available_dates_3")
         
         wait = WebDriverWait(driver, 2000)
+        print("find_available_dates_4")
+
         driver.get(url)
+        print("find_available_dates_5")
+
         print("Driver Runing")
        
         rows_list = []
