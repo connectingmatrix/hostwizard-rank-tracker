@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Automation Ranking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Link to Bootstrap CSS file -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+      body {
+        background-color: #07e2fa;
+      }
+      .container {
+        margin-top: 100px;
+      }
+      .custom-div {
+        background-color: #42c5f5;
+        border: 2px solid #0069d9;
+        border-radius: 10px;
+        padding: 50px;
+        margin: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80%; /* or any other value */
+        height: 375px; /* or any other value */
+      }
+      .custom-div h1 {
+        text-align: center;
+        font-size: 3rem;
+        margin: 0;
+        color: #fff;
+        padding: 20px;
+      }
+      .custom-div button[type="submit"] {
+        font-size: 1.5rem;
+        padding: 10px 30px;
+        background-color: #fff;
+        color: #007bff;
+        border-radius: 5px;
+        border: none;
+        margin-top: 30px;
+      }
+      .custom-div button[type="submit"]:hover {
+        background-color: #f2f2f2;
+        color: #007bff;
+      }
+      #responseMessage {
+        color: white;
+        margin-top: 20px;
+        padding: 20px;
+        text-align: center;
+      }
+      .lds-ring {
+        display: none; /* Hide the loader by default */
+        position: relative;
+        width: 64px;
+        height: 80px;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 51px;
+        height: 51px;
+        margin: 25px;
+        border: 6px solid #fff;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #fff transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row h-100">
+        <div class="col-sm-12 my-auto">
+          <div class="custom-div">
+            <h1 class="ranking">Automation Ranking</h1>
+            <h1 class="loading" style="display:none;">Loading is in progress...</h1>
+            <button type="submit" id="runButton">Run</button>
+            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+            <p id="responseMessage"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Link to Bootstrap JS file -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('#runButton').click(function() {
+          $('#runButton').hide();
+          $('.lds-ring').show();
+          $('.loading').show();
+          $('.ranking').hide();
+          $('#responseMessage').hide();
+          $.get('/run_api', function(data) {
+            $('#responseMessage').html(`<a href="${data}" target="_blank", style="color: #fff">${data}</a>`);
+            $('.lds-ring').hide();
+            $('#runButton').show();
+            $('.loading').hide();
+            $('.ranking').show();
+            $('#responseMessage').show();
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
