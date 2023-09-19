@@ -1,6 +1,12 @@
 const spawn = require("child_process").spawn;
-const pythonProcess = spawn('python',["./manage.py", 'runcrons'], {
-    stdio: 'inherit'
+console.log('Running script')
+
+console.log('Starting..')
+const pythonProcess = spawn('python',["./manage.py", 'runcrons'])
+console.log('Started')
+
+pythonProcess.stdout.on('data', async (data) => {
+    console.log('data', data.toString())
 })
 
 pythonProcess.on('exit', ()=>{

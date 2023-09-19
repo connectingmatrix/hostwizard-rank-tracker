@@ -1,4 +1,5 @@
 import re
+import sys
 import time
 import gspread
 import requests
@@ -49,6 +50,10 @@ class DataInsertion:
     
     driver = None
 
+    def print(e, val):
+        print(val)
+        sys.stdout.flush()
+        
     def __int__(self):
         #self.setup_driver()
         
@@ -75,7 +80,7 @@ class DataInsertion:
             # driver = webdriver.Chrome(options=options)
             self.driver = driver
         else:
-            print('Driver is present')
+            self.print('Driver is present')
 
     def get_spreadsheet_id(self, spreadsheet_name):
         success = False
@@ -89,7 +94,7 @@ class DataInsertion:
                 items = results.get('files', [])
 
                 if len(items) == 0:
-                    print("Workbook not found")
+                    self.print("Workbook not found")
                     workbook_id = 0
                 else:
                     # The workbook is found, continue with the script
@@ -101,21 +106,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(15)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
     
@@ -137,7 +142,7 @@ class DataInsertion:
                         return sheet_id
 
                 # The sheet does not exist, create it and get its ID
-                print('Sheet is not present, now creating new Sheet for this hotel..')
+                self.print('Sheet is not present, now creating new Sheet for this hotel..')
                 requests = [{
                     "addSheet": {
                         "properties": {
@@ -151,28 +156,28 @@ class DataInsertion:
                 response = self.sheets_service.spreadsheets().batchUpdate(
                     spreadsheetId=spreadsheet_id, body=body).execute()
                 sheet_id = response['replies'][0]['addSheet']['properties']['sheetId']
-                print( f"A new worksheet named '{sheet_name}' has been added to the Google Spreadsheet with ID '{sheet_id}'")
+                self.print( f"A new worksheet named '{sheet_name}' has been added to the Google Spreadsheet with ID '{sheet_id}'")
                 success= True
                 return sheet_id
 
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(15)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
             
 
@@ -230,21 +235,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(60)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
 
@@ -289,27 +294,27 @@ class DataInsertion:
         try:
             self.sheets_service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id,
                                                            body={'requests': requests}).execute()
-            print(
+            self.print(
                 f"Cell(s) {cell_range} in sheet '{sheet_name}' of spreadsheet '{spreadsheet_id}' have been updated with height {row_height} and width {col_width}.")
         
         except APIError as error:
                 
             if error.response.status_code == 429:
-                print("Quota exceeded. Retrying in 40 seconds...")
+                self.print("Quota exceeded. Retrying in 40 seconds...")
                 time.sleep(40)  # wait for 40 seconds
             else:
-                print("APIError occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("APIError occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
         except (ConnectionError, Timeout, TooManyRedirects) as error:
-            print("Connection error occurred: %s" % error)
-            print("Retrying in 10 seconds...")
+            self.print("Connection error occurred: %s" % error)
+            self.print("Retrying in 10 seconds...")
             time.sleep(10)  # wait for 10 seconds
 
         except Exception as error:
-            print("An error occurred: %s" % error)
-            print("Retrying in 10 seconds...")
+            self.print("An error occurred: %s" % error)
+            self.print("Retrying in 10 seconds...")
             time.sleep(10)  # wait for 10 seconds
 
     def combine_and_update_col(self, spreadsheet_name, sheet_name, column_range, value):
@@ -335,26 +340,26 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
 
     def update_spreadsheet_cell(self, spreadsheet_name, sheet_name, cell, value):
-        print(cell)
+        self.print(cell)
         success = False
         while not success:
             # Open the desired spreadsheet by its name
@@ -371,25 +376,25 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                     continue
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(40)  # wait for 10 seconds
                     continue
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(20)  # wait for 10 seconds
                 continue
 
             except Exception as error:
                 
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
                 continue
             
@@ -454,21 +459,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
     def add_checkbox(self, spreadsheet_name,  sheet_name, cell):
@@ -514,21 +519,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
             
 
@@ -602,21 +607,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
         return response
@@ -639,9 +644,9 @@ class DataInsertion:
             matches = re.findall(r'\d+', element.text)
             result = int(''.join(matches))
             return result
-#         print(result)
+#         self.print(result)
         else:
-            print(f"No element found with class name '{class_name}'")
+            self.print(f"No element found with class name '{class_name}'")
 
     def get_all_listings_Hotel_10(self,location, checkin, checkout, guests):
 
@@ -687,14 +692,14 @@ class DataInsertion:
                 
 
             except TimeoutException:
-                print("Timeout exception occurred! Retrying in 10 seconds...")
+                self.print("Timeout exception occurred! Retrying in 10 seconds...")
                 self.driver.quit()
                 time.sleep(10)
                 retries += 1
                 continue
             
             except InvalidSessionIdException:
-                print("Invalid session ID exception occurred! Retrying in 10 seconds...")
+                self.print("Invalid session ID exception occurred! Retrying in 10 seconds...")
                 # Re-initialize the driver and wait before trying again
                 self.driver.quit()
                 time.sleep(10)
@@ -702,7 +707,7 @@ class DataInsertion:
                 continue
             
             except Exception as ex:
-                print(f"Exception occurred: {ex}")
+                self.print(f"Exception occurred: {ex}")
                 self.driver.quit()
                 time.sleep(5)
                 retries += 1
@@ -744,9 +749,9 @@ class DataInsertion:
                 matches = re.findall(r'\d+', element.text)
                 hotels = int(''.join(matches))
 
-                print('Hotels', hotels)
+                self.print('Hotels', hotels)
                 total_pages = min(((hotels + 18) - 1) // 18, 5)
-                print('Total number of pages: ', total_pages)
+                self.print('Total number of pages: ', total_pages)
 
                 if hotels > 0:
                     df_final = pd.DataFrame()
@@ -756,7 +761,7 @@ class DataInsertion:
                         new_url = url + f'&items_offset={offset}&section_offset=3'
                         self.driver.get(new_url)
                         wait.until(EC.visibility_of_element_located(locator_strategy))
-                        print('Getting Hotels of Page: ', i+1)
+                        self.print('Getting Hotels of Page: ', i+1)
                         html = self.driver.page_source
                         soup = BeautifulSoup(html, 'html.parser')
                         new_listings = soup.find_all('div', {'class': 'cy5jw6o'})
@@ -771,21 +776,21 @@ class DataInsertion:
                             break
                 
             except TimeoutException:
-                print("Timeout exception occurred! Retrying in 10 seconds...")
+                self.print("Timeout exception occurred! Retrying in 10 seconds...")
                 # Refresh the page and wait for 10 seconds before trying again
                 self.driver.quit()
                 time.sleep(10)
                 continue
 
             except InvalidSessionIdException:
-                print("Invalid session ID exception occurred! Retrying in 10 seconds...")
+                self.print("Invalid session ID exception occurred! Retrying in 10 seconds...")
                 # Re-initialize the driver and wait before trying again
                 self.driver.quit()
                 time.sleep(15)
                 continue
 
             except Exception as ex:
-                print(f"Exception occurred: {ex}")
+                self.print(f"Exception occurred: {ex}")
                 self.driver.quit()
                 time.sleep(5)
                 continue
@@ -883,21 +888,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
 
@@ -926,21 +931,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
     def inserting_values(self, spreadsheet_name, sheet_name, row_data):
@@ -958,21 +963,21 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(40)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
 
@@ -995,7 +1000,7 @@ class DataInsertion:
         sheets_service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id,
                                                   body={'requests': requests}).execute()
 
-        print( f"A new worksheet named '{worksheet_title}' has been added to the Google Spreadsheet with ID '{spreadsheet_id}'")
+        self.print( f"A new worksheet named '{worksheet_title}' has been added to the Google Spreadsheet with ID '{spreadsheet_id}'")
 
     def Hotel_10(self,df):
     
@@ -1042,7 +1047,7 @@ class DataInsertion:
 
         # Calculate average
         if not values:
-            print('No data found')
+            self.print('No data found')
             return None
         num_values = len(values[0])
         total_sum = 0
@@ -1066,7 +1071,7 @@ class DataInsertion:
 
         # Calculate average
         if not condition_values or not value_values:
-            print('No data found')
+            self.print('No data found')
             return None
         num_values = len(value_values[0])
         sum = 0
@@ -1081,7 +1086,7 @@ class DataInsertion:
                         sum += float(value_values[i][j])
                         count += 1
         if count == 0:
-            print('No matching data found')
+            self.print('No matching data found')
             return None
         avg = sum / count
         return avg
@@ -1192,27 +1197,27 @@ class DataInsertion:
                     spreadsheetId=self.get_spreadsheet_id(spreadsheat_name),
                     body=batch_update_request).execute()
                 success = True   
-                print(f"Successfully updated cell sizes.")
+                self.print(f"Successfully updated cell sizes.")
                 success = True
             
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 40 seconds...")
+                    self.print("Quota exceeded. Retrying in 40 seconds...")
                     time.sleep(60)  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except (ConnectionError, Timeout, TooManyRedirects) as error:
-                print("Connection error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("Connection error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
         
         return response
@@ -1224,7 +1229,7 @@ class DataInsertion:
         if 'Hotel_Name' not in df.columns or 'Description' not in df.columns:
             print ("'Hotel_Name' or 'Description' not found in DataFrame columns")
             rank = 0
-            print(df)
+            self.print(df)
         else:
             df_hotel = df.loc[(df['Hotel_Name'] == hotel_name) & (df['Description'].apply(lambda x: SequenceMatcher(None, x, description).ratio()) > threshold)]
             if not df_hotel.empty:
@@ -1279,7 +1284,7 @@ class DataInsertion:
                 # Updating colortext
                 self.update_cell_color(spreadsheet_name, sheet_name, 'L' + str(date_index), 'white')
 
-                print(sheet_name)
+                self.print(sheet_name)
                 self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'A' + str(date_index + 1),'Avg Price Competitors')
                 self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'A' + str(date_index + 2), 'Our Property Price')
                 self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'A' + str(date_index + 3),'Difference in Price %')
@@ -1420,7 +1425,7 @@ class DataInsertion:
                             self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
 
             else:
-                print('hotel not found skipping this filter.')
+                self.print('hotel not found skipping this filter.')
                 continue
     
 
@@ -1483,17 +1488,17 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 60 seconds...")
+                    self.print("Quota exceeded. Retrying in 60 seconds...")
                     time.sleep(retry_delay)
                     retry_delay *= 2   # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
         return response
@@ -1520,23 +1525,23 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 60 seconds...")
+                    self.print("Quota exceeded. Retrying in 60 seconds...")
                     time.sleep(retry_delay)
                     retry_delay *= 2   # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
             
             except Exception as error:
-                print("An error occurred in 'search_value_in_column ': %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred in 'search_value_in_column ': %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
         return row
             
     def insert_dates_into_column(self, spreadsheet_name, worksheet_name, column):
         retry_delay = 10
-        print('Inserting dates in column A1')
+        self.print('Inserting dates in column A1')
         df_filter = pd.read_excel('input_filter.xlsx')
         dates= []
         
@@ -1567,20 +1572,20 @@ class DataInsertion:
             except APIError as error:
                 
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 60 seconds...")
+                    self.print("Quota exceeded. Retrying in 60 seconds...")
                     time.sleep(retry_delay)
                     retry_delay *= 2   # wait for 40 seconds  # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
 
-        print("Dates Inserted")
+        self.print("Dates Inserted")
     
     def insert_values_in_range(self, spreadsheet_name, worksheet_name, cell_range, values):
         retry_delay = 10
@@ -1612,17 +1617,17 @@ class DataInsertion:
 
             except (HttpError, APIError) as error:
                 if error.resp.status == 429:
-                    print("Quota exceeded. Retrying in 60 seconds...")
+                    self.print("Quota exceeded. Retrying in 60 seconds...")
                     time.sleep(retry_delay)
                     retry_delay *= 2
                 else:
-                    print("HttpError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("HttpError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)
 
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)
 
     
@@ -1641,7 +1646,7 @@ class DataInsertion:
                     num_columns = int(cell_reference.split(':')[1][1:]) - int(cell_reference.split(':')[0][1:]) + 1
                     values = [cell.value for cell in cell_range]
                     if all(element == '' for element in values):
-                        print('Rank values not found! trying again! ')
+                        self.print('Rank values not found! trying again! ')
                         continue
                 else:
                     # Single cell
@@ -1651,16 +1656,16 @@ class DataInsertion:
             
             except APIError as error:
                 if error.response.status_code == 429:
-                    print("Quota exceeded. Retrying in 60 seconds...")
+                    self.print("Quota exceeded. Retrying in 60 seconds...")
                     time.sleep(retry_delay)
                     retry_delay *= 2   # wait for 40 seconds
                 else:
-                    print("APIError occurred: %s" % error)
-                    print("Retrying in 10 seconds...")
+                    self.print("APIError occurred: %s" % error)
+                    self.print("Retrying in 10 seconds...")
                     time.sleep(10)  # wait for 10 seconds
             except Exception as error:
-                print("An error occurred: %s" % error)
-                print("Retrying in 10 seconds...")
+                self.print("An error occurred: %s" % error)
+                self.print("Retrying in 10 seconds...")
                 time.sleep(10)  # wait for 10 seconds
             
         return values
@@ -1693,39 +1698,39 @@ class DataInsertion:
                 old_price = self.get_cell_value(spreadsheet_name,hotel_ranking_sheet,'S'+str(previous_row+2))
                 b += 1
             else:
-                print('date not found continue..')
+                self.print('date not found continue..')
                 continue
             
             date_row =  a + 4 + a * 3
 
             old_price = self.convert_price_to_int(old_price)
-            print('Previous Price:', old_price)
+            self.print('Previous Price:', old_price)
             
             today_price = self.get_cell_value(spreadsheet_name,hotel_ranking_sheet,'G'+str(date_row+2))
             today_price = self.convert_price_to_int(today_price)
-            print('Today Price:', today_price)
+            self.print('Today Price:', today_price)
     
             rank_before = self.get_cell_value(spreadsheet_name,hotel_ranking_sheet,'S'+ str(previous_row))
-            print('rank_before: ', rank_before)
+            self.print('rank_before: ', rank_before)
             
             rank_after= self.get_cell_value(spreadsheet_name,hotel_ranking_sheet,'G'+str(date_row))
-            print('rank_after: ', rank_after)
+            self.print('rank_after: ', rank_after)
 
             if rank_before != rank_after:
                 rank_change= 'Yes'
             else:
                 rank_change= 'No'
-            print(rank_change)    
+            self.print(rank_change)    
             
             percentage_change = round((((today_price - old_price) / old_price) * 100),2)
-            print(percentage_change)
+            self.print(percentage_change)
 
-            print('F'+str(date_row)+':'+'K'+str(date_row))
+            self.print('F'+str(date_row)+':'+'K'+str(date_row))
             current_ranks_11_to_16 = self.get_cell_value(spreadsheet_name, hotel_ranking_sheet, 'F'+str(date_row)+':'+'K'+str(date_row))
-            print('R'+str(previous_row)+':'+'W'+str(previous_row))
+            self.print('R'+str(previous_row)+':'+'W'+str(previous_row))
             previous_ranks_11_to_16 = self.get_cell_value(spreadsheet_name, hotel_ranking_sheet, 'R'+str(previous_row)+':'+'W'+str(previous_row))
-            print('current ranks',current_ranks_11_to_16)
-            print('Previous ranks',previous_ranks_11_to_16)
+            self.print('current ranks',current_ranks_11_to_16)
+            self.print('Previous ranks',previous_ranks_11_to_16)
             
             current_all_ones = all(int(element) == 1 for element in current_ranks_11_to_16)
             previous_all_ones = all(int(element) == 1 for element in previous_ranks_11_to_16)
@@ -1738,7 +1743,7 @@ class DataInsertion:
                 next_change = -1
             
             data = [date_search, today_price,percentage_change,rank_before, rank_after,rank_change,next_change]
-            print(data)
+            self.print(data)
             self.insert_values_in_range(spreadsheet_name, worksheet_name, 'A'+str(b+3)+':'+'G'+str(b+3)  ,data)
             
 
@@ -1749,8 +1754,8 @@ class DataInsertion:
         #getting Values from sheet
         
         #cell_value = self.get_cell_value(spreadsheet_name,worksheet_name,'G4')
-        #print(type(cell_value))
-        #print(cell_value)
+        #self.print(type(cell_value))
+        #self.print(cell_value)
         
     def update_spreadsheet_range(self, spreadsheet_name, sheet_name, update_range, values):
         body = {'values': values}
@@ -1858,7 +1863,7 @@ class DataInsertion:
         self.insert_cells_for_ranking(spreadsheet_name, sheet_name)
         self.insert_data_of_ranking(spreadsheet_name, sheet_name,sheet_name,description,location)
         
-        print("Inserting Values into Price log sheet..")
+        self.print("Inserting Values into Price log sheet..")
         self.price_change_log(spreadsheet_name,sheet_name,price_log_sheet,sheet_name)
 
         # Avgerage Prices

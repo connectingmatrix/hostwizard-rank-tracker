@@ -11,14 +11,19 @@ import time
 from webdriver_manager.chrome import ChromeDriverManager
 
 class FilterData:
+
+    def print(e, val):
+        print(val)
+        sys.stdout.flush()
+
     def __int__(self):
         pass
 
     def find_available_dates(self, url):
-        print("find_available_dates")
+        self.print("find_available_dates")
         #Set up the Chrome webdriver in headless mode
         options = webdriver.ChromeOptions()
-        print("find_available_dates_1")
+        self.print("find_available_dates_1")
         #options.binary_location = 'googlechrome'
         options.add_argument('--disable-extensions')
         options.add_argument('--headless')
@@ -26,19 +31,19 @@ class FilterData:
         options.add_argument('--disable-dev-shm-usage')
         # options.add_argument('--remote-debugging-port=9515')
         options.add_argument('--disable-setuid-sandbox')
-        print("find_available_dates_2")
+        self.print("find_available_dates_2")
         
         driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
         # driver = webdriver.Chrome(options=options)
-        print("find_available_dates_3")
+        self.print("find_available_dates_3")
         
         wait = WebDriverWait(driver, 2000)
-        print("find_available_dates_4")
+        self.print("find_available_dates_4")
 
         driver.get(url)
-        print("find_available_dates_5")
+        self.print("find_available_dates_5")
 
-        print("Driver Runing")
+        self.print("Driver Runing")
        
         rows_list = []
         check = 0
@@ -58,7 +63,7 @@ class FilterData:
                                                 "div > table > tbody > tr > td > div[data-is-day-blocked=false]")
                 
                 # extract the dates and add them to the list
-                #print(f"dates:{dates_rows}")
+                #self.print(f"dates:{dates_rows}")
                 if dates_rows:
                     for row in dates_rows:
                         date = row.get_attribute("data-testid")
@@ -77,14 +82,14 @@ class FilterData:
                     if check >= 7:
                         break
                     driver.find_element(By.CSS_SELECTOR,'div[role=application] div:nth-child(2) > button[aria-label="Move forward to switch to the next month."]').click()
-                    print(f"dates not found on first page now clicking next")
+                    self.print(f"dates not found on first page now clicking next")
                     continue
 
             except Exception as ex:
         
-                print("Exception occurs retrying in 10 seconds! Please Wait... ")
+                self.print("Exception occurs retrying in 10 seconds! Please Wait... ")
                 # Refresh the page and wait for 10 seconds before trying again
-                print('Exception Message: ',ex)
+                self.print('Exception Message: ',ex)
                 driver.refresh()
                 time.sleep(10)
                 continue
@@ -131,7 +136,7 @@ class FilterData:
         df_final['Check-In'] = pd.to_datetime(df_final['Check-In'])
         df_final['Check-Out'] = pd.to_datetime(df_final['Check-Out'])
         df_final.to_excel('input_filter.xlsx', index=False)
-        print(f"input_filter xlsx file successfully created")
+        self.print(f"input_filter xlsx file successfully created")
         
         return df_final
 
