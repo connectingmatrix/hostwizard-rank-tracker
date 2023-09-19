@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 from selenium import webdriver
 from datetime import datetime, timedelta
@@ -7,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 import time
-
+from webdriver_manager.chrome import ChromeDriverManager
 
 class FilterData:
     def __int__(self):
@@ -27,7 +28,8 @@ class FilterData:
         options.add_argument('--disable-setuid-sandbox')
         print("find_available_dates_2")
         
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+        # driver = webdriver.Chrome(options=options)
         print("find_available_dates_3")
         
         wait = WebDriverWait(driver, 2000)

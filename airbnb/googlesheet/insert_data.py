@@ -22,6 +22,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 class DataInsertion:
 
@@ -70,7 +71,8 @@ class DataInsertion:
             options.accept_insecure_certs= True
             #options.add_argument('--incognito')
 
-            driver = webdriver.Chrome(options=options)
+            driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+            # driver = webdriver.Chrome(options=options)
             self.driver = driver
         else:
             print('Driver is present')
@@ -1261,8 +1263,6 @@ class DataInsertion:
             filter_date = month + " " + checkin + ' to ' + checkout
 
             self.get_all_listings(location, checkin, checkout, 8,hotel_name,description)
-            
-            
             
             if self.rank_status:
                 b += 1
