@@ -50,8 +50,8 @@ class DataInsertion:
     
     driver = None
 
-    def print(e, val):
-        print(val)
+    def print(*args, **kwargs):
+        print(*args, **kwargs)
         sys.stdout.flush()
         
     def __int__(self):
