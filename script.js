@@ -6,7 +6,11 @@ const pythonProcess = spawn('python',["./manage.py", 'runcrons'])
 console.log('Started')
 
 pythonProcess.stdout.on('data', async (data) => {
-    console.log('data', data.toString())
+    console.log(data.toString())
+})
+
+pythonProcess.stderr.on('data', async (data) => {
+    console.error(data.toString())
 })
 
 pythonProcess.on('exit', ()=>{
