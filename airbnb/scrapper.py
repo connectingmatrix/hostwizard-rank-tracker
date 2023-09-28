@@ -4,6 +4,15 @@ from googlesheet.filter_data import FilterData
 from googlesheet.insert_data import DataInsertion
 import pandas as pd
 from multiprocessing import Pool
+import re
+
+def get_airbnb_id_from_url(url):
+    # The regular expression looks for '/rooms/' followed by one or more digits
+    match = re.search(r'/rooms/(\d+)', url)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
 
 def filterAndInsert(x):
 
@@ -28,8 +37,11 @@ def filterAndInsert(x):
     print("Inserting Data..", spreadsheet_name)
     sys.stdout.flush()
     insert_data = DataInsertion()
-    insert_data.main(spreadsheet_name, hotel_name, description, location, price_log_sheet)
 
+    airbnb_id = get_airbnb_id_from_url(url)
+
+    print('Calling main')
+    insert_data.main(spreadsheet_name, hotel_name, description, location, price_log_sheet, airbnb_id)
 
 
 if __name__ == '__main__':
