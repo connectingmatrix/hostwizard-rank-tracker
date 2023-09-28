@@ -1,10 +1,7 @@
 from multiprocessing import Pool
-import datetime
 import sys
-import time
-from django_cron import CronJobBase, Schedule
-from .googlesheet.filter_data import FilterData
-from .googlesheet.insert_data import DataInsertion
+from googlesheet.filter_data import FilterData
+from googlesheet.insert_data import DataInsertion
 import pandas as pd
 from multiprocessing import Pool
 

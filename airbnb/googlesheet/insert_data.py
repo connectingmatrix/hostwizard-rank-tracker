@@ -25,6 +25,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
+def background(f):
+    def wrapped(*args, **kwargs):
+        return asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
+
+    return wrapped
+
 class DataInsertion:
 
     scope = ['https://spreadsheets.google.com/feeds',
@@ -42,7 +48,7 @@ class DataInsertion:
     }
 
     # Reading Credentails from ServiceAccount Keys file
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('airbnb/googlesheet/ranking-automation-33939eb3373d.json', scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('googlesheet/ranking-automation-33939eb3373d.json', scope)
     client = gspread.authorize(credentials)
     # Build the Drive API client
     drive_service = build('drive', 'v3', credentials=credentials)
@@ -1303,131 +1309,139 @@ class DataInsertion:
                 
                 guest_list = [8,9,10,11,12,13,14,15,16]
                 
+                ### Need to Move to the seperate thread
                 for guest in guest_list:
-                    
-                    df = self.get_all_listings(location, checkin, checkout, guest,hotel_name,description)
-                    rank = self.Rank_find(df, hotel_name,description)
-                    if rank > 0:
-                        price = self.Property_Price(df, rank, hotel_name,description)
-                    else:
-                        price = 0
-                    
-                    if len(df) < 36:
-                        # Finding Average price for the hotesl of 5,6,7 beds
-                        listings=self.get_all_listings_Hotel_10(location, checkin, checkout, guest)
-                        total_10 = self.dataframe_buliding(listings,self.RULES_SEARCH_PAGE)
-                        df_10 = self.Hotel_10(total_10)
-                        avg = int(df_10['Total_Price'].mean())
-                    else:
-                        df_10 = self.Hotel_10(df)
-                        avg = int(df_10['Total_Price'].mean())
-                    
-                    if guest == 8:
-                        
-                        
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 7 + b * 3),
-                                                    str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-
-
-                    elif guest == 9:
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 7 + b * 3),
-                                                    str(int(((price - avg) / avg) * 100)) + '%')
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-                    elif guest == 10:
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 7 + b * 3),
-                                                    str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-                    elif guest == 11:
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 7 + b * 3),
-                                                    str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-                    elif guest == 12:
-
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 7 + b * 3),
-                                                    str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-
-                    elif guest == 13:
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 7 + b * 3),
-                                                    str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-                    elif guest == 14:
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b+ 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b + 7 + b * 3), str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-                    elif guest == 15:
-                        
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 7 + b * 3), str(int(((price - avg) / avg) * 100)) + '%')
-
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
-
-                    elif guest == 16:
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 4 + b * 3), str(rank))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 5 + b * 3), str('$'+str(avg)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 6 + b * 3), str('$'+str(price)))
-                        self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 7 + b * 3), str(int(((price - avg) / avg) * 100)) + '%')
-                        
-                        if rank > 2:
-                            data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
-                            self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+                    print('Starting Thread for ', guest)
+                    sys.stdout.flush()
+                    self.updateGuestList(spreadsheet_name, sheet_name, b, guest, location, checkin, checkout, today_date, filter_date, hotel_name, description)
 
             else:
                 self.print('hotel not found skipping this filter.')
                 continue
-    
+
+    ##MAIN FUNCTION TO GET DATA AND FLUSH IT
+    @background
+    def updateGuestList(self, spreadsheet_name, sheet_name, b, guest, location, checkin, checkout, today_date, filter_date, hotel_name, description):
+        df = self.get_all_listings(location, checkin, checkout, guest,hotel_name,description)
+        rank = self.Rank_find(df, hotel_name,description)
+        if rank > 0:
+            price = self.Property_Price(df, rank, hotel_name,description)
+        else:
+            price = 0
+        
+        if len(df) < 36:
+            # Finding Average price for the hotesl of 5,6,7 beds
+            listings=self.get_all_listings_Hotel_10(location, checkin, checkout, guest)
+            total_10 = self.dataframe_buliding(listings,self.RULES_SEARCH_PAGE)
+            df_10 = self.Hotel_10(total_10)
+            avg = int(df_10['Total_Price'].mean())
+        else:
+            df_10 = self.Hotel_10(df)
+            avg = int(df_10['Total_Price'].mean())
+        
+        if guest == 8:
+            
+            
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'C' + str(b + 7 + b * 3),
+                                        str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+
+
+        elif guest == 9:
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'D' + str(b + 7 + b * 3),
+                                        str(int(((price - avg) / avg) * 100)) + '%')
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+        elif guest == 10:
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'E' + str(b + 7 + b * 3),
+                                        str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+        elif guest == 11:
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'F' + str(b + 7 + b * 3),
+                                        str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+        elif guest == 12:
+
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'G' + str(b + 7 + b * 3),
+                                        str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+
+        elif guest == 13:
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'H' + str(b + 7 + b * 3),
+                                        str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+        elif guest == 14:
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b+ 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'I' + str(b + 7 + b * 3), str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+        elif guest == 15:
+            
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'J' + str(b + 7 + b * 3), str(int(((price - avg) / avg) * 100)) + '%')
+
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+        elif guest == 16:
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 4 + b * 3), str(rank))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 5 + b * 3), str('$'+str(avg)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 6 + b * 3), str('$'+str(price)))
+            self.update_spreadsheet_cell(spreadsheet_name, sheet_name, 'K' + str(b + 7 + b * 3), str(int(((price - avg) / avg) * 100)) + '%')
+            
+            if rank > 2:
+                data = [today_date,filter_date, hotel_name, str(guest), str('$'+str(price)),str('$'+str(avg)),str(rank)]
+                self.inserting_values(spreadsheet_name, 'Rank Below 2 Summary', data)
+
+
 
     def insert_cells_for_price_log(self, spreadsheet_name, sheet_name):
 
