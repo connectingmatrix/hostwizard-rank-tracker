@@ -1274,6 +1274,13 @@ class DataInsertion:
         print('response', response)
         print(response.json())
 
+    def post_ranking_below_two_data_to_crm(self, payload):
+        url = "https://api.crm.hostwizard.ai/rank-below-twos"
+
+        response = requests.post(url, json=payload)
+        print('response below two', response)
+        print(response.json())
+
     
     def insert_data_of_ranking(self, spreadsheet_name, sheet_name, hotel_name, description,location, airbnb_id):
         
@@ -1399,6 +1406,20 @@ class DataInsertion:
             'our_property_price': str(price),
             'difference_in_price_percentage': str(int(((price - avg) / avg) * 100))
         }
+
+        if(rank > 2):
+            rank_obj = {
+                "checkIn": checkin,
+                "filterDate": filter_date,
+                "propertyName": hotel_name,
+                "guests": str(guest),
+                "ourPropertyPrice": str(price),
+                "avgPriceCompetitors": str(avg),
+                "rank": str(rank)
+            }
+
+            self.post_ranking_below_two_data_to_crm(rank_obj)
+
 
         # print(ranking_array)
             
