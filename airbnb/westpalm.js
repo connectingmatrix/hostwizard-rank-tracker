@@ -2,7 +2,7 @@ const spawn = require("child_process").spawn;
 console.log('Running script')
 
 console.log('Starting..')
-const pythonProcess = spawn('python',["./scrapper-cron.py", 'runcrons'])
+const pythonProcess = spawn('python',["./scrapper-cron-westpalm.py", 'runcrons'])
 console.log('Started')
 
 pythonProcess.stdout.on('data', async (data) => {
