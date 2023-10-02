@@ -45,8 +45,8 @@ def filterAndInsert(x):
 
 
 if __name__ == '__main__':
-    df_urls = pd.read_excel('urls.xlsx')
-
-    with Pool(2) as p:
-        p.map(filterAndInsert, range(len(df_urls)))
-        # print(p.map(filterAndInsert, range(len(df_urls))))
+    
+    filterAndInsert(int(sys.argv[1]))
+    # with Pool(2) as p:
+    #     p.map(filterAndInsert, range(len(df_urls)))
+    #     # print(p.map(filterAndInsert, range(len(df_urls))))
