@@ -702,7 +702,9 @@ class DataInsertion:
 
             except TimeoutException:
                 self.print("Timeout exception occurred! Retrying in 10 seconds...")
-                self.driver.quit()
+                if self.driver is not None:
+                    self.driver.quit()
+                # self.driver.quit()
                 time.sleep(10)
                 retries += 1
                 continue
@@ -710,14 +712,18 @@ class DataInsertion:
             except InvalidSessionIdException:
                 self.print("Invalid session ID exception occurred! Retrying in 10 seconds...")
                 # Re-initialize the driver and wait before trying again
-                self.driver.quit()
+                if self.driver is not None:
+                    self.driver.quit()
+                # self.driver.quit()
                 time.sleep(10)
                 retries += 1
                 continue
             
             except Exception as ex:
                 self.print(f"Exception occurred: {ex}")
-                self.driver.quit()
+                if self.driver is not None:
+                    self.driver.quit()
+                # self.driver.quit()
                 time.sleep(5)
                 retries += 1
             else:
