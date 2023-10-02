@@ -9,7 +9,6 @@ def run_job():
     print(f"Running job at {now}")
 
     # Replace 'your_script.py' with the name of the script you want to run
-    subprocess.Popen(["python", "scrapper.py", "0"])
     subprocess.Popen(["python", "scrapper.py", "1"])
 
 # Schedule the job to run every day at midnight
