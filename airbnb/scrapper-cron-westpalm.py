@@ -5,8 +5,8 @@ import datetime
 
 # Define the function to run the job
 def run_job():
-    now = datetime.datetime.now()
-    print(f"Running job at {now}")
+    # now = datetime.datetime.now()
+    # print(f"Running job at {now}")
 
     # Replace 'your_script.py' with the name of the script you want to run
     subprocess.Popen(["python", "scrapper.py", "1"])
